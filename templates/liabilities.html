@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section>
+    <h2>Liabilities Management</h2>
+
+    <form method="POST">
+        <h3>Add New Liability</h3>
+        <div>
+            <label>Type:</label>
+            <select name="type" required>
+                <option value="Deposits">Deposits</option>
+                <option value="Bonds">Bonds</option>
+                <option value="Borrowings">Borrowings</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div>
+            <label>Amount ($):</label>
+            <input type="number" name="amount" step="0.01" required>
+        </div>
+        <div>
+            <label>Maturity Date:</label>
+            <input type="date" name="maturity" required>
+        </div>
+        <div>
+            <label>Interest Rate (%):</label>
+            <input type="number" name="rate" step="0.01" required>
+        </div>
+        <button type="submit">Add Liability</button>
+    </form>
+
+    <h3>Current Liabilities</h3>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Maturity</th>
+            <th>Rate</th>
+        </tr>
+        {% for liability in liabilities %}
+        <tr>
+            <td>{{ liability.type }}</td>
+            <td>${{ "{:,.2f}".format(liability.amount) }}</td>
+            <td>{{ liability.maturity }}</td>
+            <td>{{ "{:.2%}".format(liability.rate) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+{% endblock %}

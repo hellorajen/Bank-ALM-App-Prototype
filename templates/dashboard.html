@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="metrics">
+    <div class="metric-card">
+        <h3>Total Assets</h3>
+        <p>{{ total_assets }}</p>
+    </div>
+    <div class="metric-card">
+        <h3>Total Liabilities</h3>
+        <p>{{ total_liabilities }}</p>
+    </div>
+    <div class="metric-card">
+        <h3>Net Interest Income</h3>
+        <p>{{ net_interest_income }}</p>
+    </div>
+</section>
+
+{% if alerts %}
+<section class="alerts">
+    <h2>Liquidity Alerts</h2>
+    <ul>
+        {% for alert in alerts %}
+        <li class="alert">{{ alert }}</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+<section class="overview">
+    <div class="half-width">
+        <h2>Recent Assets</h2>
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Maturity</th>
+                <th>Rate</th>
+            </tr>
+            {% for asset in assets %}
+            <tr>
+                <td>{{ asset.type }}</td>
+                <td>${{ "{:,.2f}".format(asset.amount) }}</td>
+                <td>{{ asset.maturity }}</td>
+                <td>{{ "{:.2%}".format(asset.rate) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="half-width">
+        <h2>Recent Liabilities</h2>
+        <table>
+            <tr>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Maturity</th>
+                <th>Rate</th>
+            </tr>
+            {% for liability in liabilities %}
+            <tr>
+                <td>{{ liability.type }}</td>
+                <td>${{ "{:,.2f}".format(liability.amount) }}</td>
+                <td>{{ liability.maturity }}</td>
+                <td>{{ "{:.2%}".format(liability.rate) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+
+<section class="risk-metrics">
+    <h2>Liquidity Risk Metrics</h2>
+
+    <div class="metric-card">
+        <h3>Liquidity Coverage Ratio (LCR)</h3>
+        <p>{{ lcr_display }}</p>
+        <small>Minimum requirement: 100%</small>
+    </div>
+
+    <h3>Maturity Gap Analysis</h3>
+    <table>
+        <tr>
+            <th>Time Bucket</th>
+            <th>Assets</th>
+            <th>Liabilities</th>
+            <th>Gap</th>
+        </tr>
+        {% for bucket in maturity_gaps %}
+        <tr>
+            <td>{{ bucket }}</td>
+            <td>{{ asset_maturities[bucket] }}</td>
+            <td>{{ liability_maturities[bucket] }}</td>
+            <td
+                class="{{ 'positive' if maturity_gaps[bucket].startswith('$') and not maturity_gaps[bucket].startswith('$-') else 'negative' }}">
+                {{ maturity_gaps[bucket] }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+{% endblock %}
