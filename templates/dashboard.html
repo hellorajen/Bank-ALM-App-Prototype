@@ -71,11 +71,30 @@
 <section class="risk-metrics">
     <h2>Liquidity Risk Metrics</h2>
 
-    <div class="metric-card">
-        <h3>Liquidity Coverage Ratio (LCR)</h3>
-        <p>{{ lcr_display }}</p>
-        <small>Minimum requirement: 100%</small>
+    <div class="metric-row">
+        <div class="metric-card">
+            <h3>Loan-to-Deposit Ratio</h3>
+            <p>{{ "{:.2%}".format(ratios.ldr) if ratios.ldr is not none else "N/A" }}</p>
+            <small>Target: 80-90%</small>
+        </div>
+        <div class="metric-card">
+            <h3>Net Interest Margin</h3>
+            <p>{{ "{:.2%}".format(ratios.nim) if ratios.nim is not none else "N/A" }}</p>
+            <small>Industry avg: 2.5-3.5%</small>
+        </div>
+        <div class="metric-card">
+            <h3>NSFR</h3>
+            <p>{{ "{:.2%}".format(ratios.nsfr) if ratios.nsfr is not none else "N/A" }}</p>
+            <small>Basel III min: 100%</small>
+        </div>
+        <div class="metric-card">
+            <h3>Liquidity Coverage Ratio (LCR)</h3>
+            <p>{{ lcr_display }}</p>
+            <small>Minimum requirement: 100%</small>
+        </div>
+
     </div>
+
 
     <h3>Maturity Gap Analysis</h3>
     <table>

@@ -77,6 +77,37 @@ def calculate_lcr():
         print(f"Error calculating LCR: {e}")
         return "N/A"
 
+def calculate_ldr():
+    try:
+        total_loans = sum(a['amount'] for a in assets if a['type'] == 'Loans')
+        total_deposits = sum(l['amount'] for l in liabilities if l['type'] == 'Deposits')
+        return total_loans / total_deposits if total_deposits > 0 else float('inf')
+    except:
+        return float('inf')
+
+def calculate_nim():
+    try:
+        interest_income = sum(a['amount'] * a['rate'] for a in assets)
+        interest_expense = sum(l['amount'] * l['rate'] for l in liabilities)
+        avg_earning_assets = sum(a['amount'] for a in assets if a['type'] in ['Loans', 'Securities'])
+        return (interest_income - interest_expense) / avg_earning_assets if avg_earning_assets > 0 else 0
+    except:
+        return 0
+
+def calculate_nsfr():
+    try:
+        available_funding = sum(
+            l['amount'] * 0.95 if l['type'] == 'Deposits' else l['amount'] * 0.85
+            for l in liabilities
+        )
+        required_funding = sum(
+            a['amount'] * 0.65 if a['type'] == 'Loans' else a['amount'] * 0.50
+            for a in assets
+        )
+        return available_funding / required_funding if required_funding > 0 else float('inf')
+    except:
+        return float('inf')
+
 def check_liquidity_alerts():
     """Generate liquidity risk alerts"""
     alerts = []
@@ -106,6 +137,17 @@ def dashboard():
         sum(a['amount'] * a['rate'] for a in assets) - 
         sum(l['amount'] * l['rate'] for l in liabilities)
     )
+        # New ratio calculations
+    ldr = calculate_ldr()
+    nim = calculate_nim()
+    nsfr = calculate_nsfr()
+    
+    # Format ratios safely
+    ratios = {
+        'ldr': float(ldr) if ldr != float('inf') else None,
+        'nim': float(nim) if nim != float('inf') else None,
+        'nsfr': float(nsfr) if nsfr != float('inf') else None
+    }
     
     maturity_gaps, asset_maturities, liability_maturities = calculate_maturity_gaps()
     lcr_display = calculate_lcr()
@@ -115,6 +157,7 @@ def dashboard():
                          total_assets="${:,.2f}".format(total_assets),
                          total_liabilities="${:,.2f}".format(total_liabilities),
                          net_interest_income="${:,.2f}".format(net_interest_income),
+                         ratios=ratios,
                          assets=assets[-5:],
                          liabilities=liabilities[-5:],
                          maturity_gaps=maturity_gaps,
